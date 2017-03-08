@@ -9,46 +9,53 @@ import {
   AppRegistry,
   StyleSheet,
   Text,
-  View
+  View,
+  Dimensions,
+  Navigator,
+  TouchableHighlight
 } from 'react-native';
+
+import Question from './componets/question.js';
+import MyScene from './componets/myscene.js';
 
 export default class AwesomeProject extends Component {
   render() {
+    const questionDeck = require('./sampleData/questionDeck.js');
+    deckSize = questionDeck.length;
+    let questionIterator = 0;
+    let navIndex = 0;
+    let state = false;
     return (
-      <View style={styles.container}>
-        <Text style={styles.welcome}>
-          Welcome to React Native!
-        </Text>
-        <Text style={styles.instructions}>
-          To get started, edit index.ios.js
-        </Text>
-        <Text style={styles.instructions}>
-          Press Cmd+R to reload,{'\n'}
-          Cmd+D or shake for dev menu
-        </Text>
-      </View>
+
+      <Navigator
+        initialRoute={{title: 'Question', index: navIndex, question: questionDeck[questionIterator] }}
+        renderScene={(route, navigator) =>
+          <Question
+            disabled={state}
+            question={route.question.question}
+            answers={route.question.answers}
+            correct={route.question.correct}
+            onPress={
+              (result) => {
+                questionIterator++
+                console.log("The answer result is:", result)
+                if (deckSize > questionIterator){
+                  navigator.push({title: "Next Question", index: navIndex++ , question: questionDeck[questionIterator]})
+                }else {
+                  questionIterator = 0;
+                  navIndex = 0;
+                  navigator.push({title: "Next Question", index: navIndex++ , question: questionDeck[questionIterator]})
+                }
+
+
+              }
+
+            }
+          />
+        }
+      />
     );
   }
 }
-
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    justifyContent: 'center',
-    alignItems: 'center',
-    // backgroundColor: '#F5FCFF',
-    backgroundColor: 'red',
-  },
-  welcome: {
-    fontSize: 20,
-    textAlign: 'center',
-    margin: 10,
-  },
-  instructions: {
-    textAlign: 'center',
-    color: '#333333',
-    marginBottom: 5,
-  },
-});
 
 AppRegistry.registerComponent('AwesomeProject', () => AwesomeProject);
